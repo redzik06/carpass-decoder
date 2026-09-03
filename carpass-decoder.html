@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Opel CarPass Decoder</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <main>
+            <!-- Input Section -->
+            <section class="card" id="input-section" aria-labelledby="input-heading">
+                <h2 id="input-heading" class="card-title">Dane wejściowe</h2>
+
+                <div class="form-group">
+                    <label>Plik binarny</label>
+                    <div class="file-upload-area" id="file-upload-area">
+                        <input type="file" id="file-input" accept=".bin,.dat,.hex,.raw,*/*" />
+                        <label class="file-upload-label" for="file-input">
+                            Kliknij lub upuść plik binarny tutaj
+                        </label>
+                        <div class="file-info" id="file-info"></div>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary" id="decode-btn">
+                        Dekoduj CarPass
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="clear-btn">
+                        Wyczyść
+                    </button>
+                </div>
+            </section>
+
+            <!-- Output Section -->
+            <section class="card results-area" id="output-section" aria-labelledby="output-heading">
+                <h2 id="output-heading" class="card-title">
+                    <button type="button" class="back-btn" id="back-btn" aria-label="Powrót do formularza">&larr;</button>
+                    Dane wyjściowe
+                </h2>
+
+                <div class="result-item" style="border-bottom: 2px solid var(--color-border); padding-bottom: var(--space-4); margin-bottom: var(--space-4);">
+                    <span class="result-label">Kod CarPass</span>
+                    <span class="result-value" id="decoded-code" style="color: var(--color-success); font-size: var(--font-size-lg);">—</span>
+                </div>
+
+                <div id="results-content" style="flex-shrink: 0;"></div>
+
+                <h3 style="font-size: var(--font-size-lg); margin-top: var(--space-6); margin-bottom: var(--space-3); padding-bottom: var(--space-2); border-bottom: 1px solid var(--color-border); flex-shrink: 0;">Log operacji</h3>
+                <div id="log-output" class="log-output"></div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+    <script src="decoders/opel/vectra/c/cid.js"></script>
+</body>
+</html>
