@@ -232,3 +232,15 @@ Poprawka:
 - Reset dotyczy TYLKO 0x1E3 (0x1E8 zostaje bez zmian, jak we wzorcu)
 - Zweryfikowano: wygenerowany przez przycisk plik jest **bit-identyczny** z `zrestetowany.BIN`
 - app.js log komunikat bez kwoty prób
+
+### 13. KOREKTA pole licznika - "Nieudane próby" (odczyt z pliku)
+
+Użytkownik wyjaśnił, że pole ma pokazywać **liczbę nieudanych prób programowania**, a etykieta "Pozostałe próby" była błędna. Finalna, jednoznaczna reguła:
+
+- Pole odczytuje i wyświetla **wartość bajta 0x1E3 wprost z wgrywanego pliku** — bez twardego mapowania (soft działa dla dowolnego pliku, nie tylko testowych)
+- Etykieta w UI: **"Nieudane próby"**
+- `zrestetowany.BIN` (0x1E3=0) → 0; `zresetowany 10.BIN` (0) → 0; `astra h` (5) → 5; `zafira` (0) → 0
+- Usunięto wcześniejsze błędne interpretacje (0→10, reset→5) i martwy log "2. pole"
+- Przycisk "Pobierz zresetowany dump" zeruje 0x1E3 do 0x00 (wzorzec zrestetowany.BIN)
+
+Plus updated AGENTS.md.

@@ -72,13 +72,17 @@ Zafira B używa **tej samej struktury co Astra H** (przesunięty VIN na 0xC0), r
 
 VIN Zafiry: `W0L0AHM` + 10 cyfr/znaków z 0xC8 (np. `W0L0AHM5725025704`). PIN CarPass: jak Astra H, `(0x1E2)(0x1E6)(0x1E5)(0x1E9)` (zweryfikowano: `zafira b cid pin 8838 93C66.bin` → PIN `8838`). Code Index i Serial — jak Astra H.
 
-## Zresetowany dump (licznik prób)
+## Zresetowany dump (licznik prób / nieudane próby)
 
-Bajt **0x1E3** steruje licznikiem prób PIN. Wartość `0x00` (jak w dostarczonych plikach `zrestetowany.BIN`) = stan umożliwiający dalsze programowanie/odblokowany. Przykład z forum (Shooting): "PIN 0688 and here is reset, it was down to 5 tries remaining" — plik resetu ma `0x1E3=0x00`.
+Bajt **0x1E3** = liczba nieudanych prób programowania PIN. Aplikacja **odczytuje i wyświetla wartość wprost z wgrywanego pliku** (bez żadnego twardego mapowania — działa dla dowolnego pliku). Etykieta w UI: **"Nieudane próby"**.
+
+Przykład z forum (Shooting): "PIN 0688 and here is reset, it was down to 5 tries remaining" — plik resetu `zrestetowany.BIN` ma `0x1E3=0x00`.
 
 Testowe pliki resetu (ten sam pojazd co `astra h cid 93c66.BIN`):
 - `zrestetowany.BIN` — różni się od Astry tylko na 0x1E3 (`0x05` → `0x00`), 0x1E8 pozostał `0x05`
 - `zresetowany 10.BIN` — dodatkowo zeruje 0x1E8 oraz kasuje część bajtów PIN regionu na 0xFF (wykasowany PIN)
+
+Uwaga: se pliki z `0x1E3=0x00` (np. `zafira b cid pin 8838 93C66.bin`) pokazują 0 — to zgodne z ich zawartością (nazwa "10" w `zresetowany 10.BIN` to tylko nazwa pliku, wartość bajta to 0).
 
 Dekodery Astra H i Zafira B mają funkcję **reset licznika prób**:
 - zwracają `remainingTries` (wartość 0x1E3) i `reset: { offsets, value, filename }`
@@ -86,7 +90,7 @@ Dekodery Astra H i Zafira B mają funkcję **reset licznika prób**:
 - Wygenerowany plik jest bit-identyczny z wzorcowym `zrestetowany.BIN` (zweryfikowane)
 - Vectra C NIE ma tego pola (brak takiego licznika) — reset tylko w Astra/Zafira
 
-Nowe pole w wyniku dekodera: `remainingTries`, `reset` (obiekt). Dodawane do dekoderów Astra/Zafira i renderowane w `app.js`.
+Nowe pola w wyniku dekodera: `remainingTries`, `reset` (obiekt). Dodawane do dekoderów Astra/Zafira i renderowane w `app.js`.
 
 ## Styling rules (non-obvious)
 
