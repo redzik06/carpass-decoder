@@ -259,3 +259,19 @@ Zmiany:
 - Weryfikacja: wszystkie ID/klasy używane przez app.js istnieją w HTML, wszystkie `var(--color-*)` zdefiniowane, brak błędów składni JS, nawiasy CSS zbilansowane; screenshot narzędziami headless niemożliwy w sandboxie (SWGL fail)
 
 Plus updated AGENTS.md.
+
+### 15. Sidebar menu - operacje na pliku + COMMING SOON
+
+Użytkownik poprosił o dodanie w lewym menu opcji obsługi konkretnych danych na pliku (jak reset w Astra/Zafira) oraz wolnych pól pod późniejsze funkcje nazwanych COMMING SOON. Wybrano "Kilka gotowych funkcji z realnym działaniem" + "4-6 pól COMMING SOON".
+
+Implementacja:
+- Dekodery Astra H / Zafira B zwracają teraz `actions: [{ id, label, filename, apply(copy) }]`:
+  - `reset-counter` — `copy[0x1E3] = 0x00`
+  - `clear-pin` — `PIN_OFFSETS.forEach(o => copy[o] &= 0xF0)` (kasuje PIN, niskie nibble)
+- `app.js`: sekcja "Operacje na pliku" (`#file-actions`) budowana przez `populateFileActions(result)`; klik kopiuje `loadedFileData`, wywołuje `apply()`, pobiera plik przez nowy helper `downloadBin()`
+- Sekcja "Nadchodzące" (`#coming-soon`) z 5 placeholderami `COMMING SOON` (DTC, przebieg, nowy klucz, format EEPROM, backup)
+- `showInput()` / `clearBtn` resetują menu (`populateFileActions(null)`), placeholder "Rozpoznaj moduł, aby zobaczyć operacje" gdy brak akcji
+- `downloadBin()` wspólny helper (użyty też w przycisku reset — usunięto duplikację kodu)
+- Weryfikacja: test funkcjonalny na `astra h cid 93c66.BIN` — reset zmienia tylko 0x1E3 (1 bajt), clear-pin zmienia PIN 0688 → 0000; JS syntax OK; wszystkie ID/CSS zdefiniowane
+
+Plus updated AGENTS.md.

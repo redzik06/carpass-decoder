@@ -95,6 +95,26 @@
                 value: TRY_COUNTER_RESET,
                 filename: `zafira-b-${pin}-reset.bin`,
             },
+            actions: [
+                {
+                    id: 'reset-counter',
+                    label: 'Reset licznika prób',
+                    filename: `zafira-b-${pin}-reset.bin`,
+                    apply(copy) {
+                        copy[0x1E3] = 0x00;
+                        return `Zresetowano licznik prób (0x1E3 = 0x00)`;
+                    },
+                },
+                {
+                    id: 'clear-pin',
+                    label: 'Wykasuj PIN CarPass',
+                    filename: `zafira-b-${pin}-clear-pin.bin`,
+                    apply(copy) {
+                        PIN_OFFSETS.forEach(off => { copy[off] &= 0xF0; });
+                        return `Wykasowano PIN CarPass (niskie nibble = 0)`;
+                    },
+                },
+            ],
         };
     }
 

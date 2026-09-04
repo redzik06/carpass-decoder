@@ -119,9 +119,84 @@ function showInput() {
     inputSection.style.display = '';
     navOutput.classList.remove('active');
     navInput.classList.add('active');
+    populateFileActions(null);
 }
 
 backBtn.addEventListener('click', showInput);
+
+// Download helper
+function downloadBin(bytes, filename) {
+    const blob = new Blob([bytes], { type: 'application/octet-stream' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+// Sidebar menu: file actions + coming soon placeholders
+const fileActionsEl = document.getElementById('file-actions');
+const comingSoonEl = document.getElementById('coming-soon');
+
+const COMING_SOON_ITEMS = [
+    'Usuwanie błędów (DTC)',
+    'Ustawienie przebiegu',
+    'Wymiana PIN / nowy klucz',
+    'Formatowanie EEPROM',
+    'Kopia zapasowa (backup)',
+];
+
+function buildComingSoon() {
+    comingSoonEl.innerHTML = '';
+    COMING_SOON_ITEMS.forEach((label) => {
+        const a = document.createElement('a');
+        a.href = '#';
+        a.className = 'nav-item nav-link sidebar-link coming-soon';
+        a.innerHTML = `<i class="fa fa-hourglass-half me-2"></i>${escapeHtml(label)}<span class="coming-soon-badge">COMMING SOON</span>`;
+        a.addEventListener('click', (e) => {
+            e.preventDefault();
+            log(`Funkcja "${label}" będzie dostępna wkrótce (COMMING SOON).`, 'INFO');
+        });
+        comingSoonEl.appendChild(a);
+    });
+}
+
+function populateFileActions(result) {
+    fileActionsEl.innerHTML = '';
+    const actions = (result && result.actions) || [];
+    if (actions.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'nav-item nav-link sidebar-link';
+        empty.style.color = '#3d4050';
+        empty.style.cursor = 'default';
+        empty.innerHTML = '<i class="fa fa-info-circle me-2"></i>Rozpoznaj moduł, aby zobaczyć operacje';
+        fileActionsEl.appendChild(empty);
+        return;
+    }
+    actions.forEach((action) => {
+        const a = document.createElement('a');
+        a.href = '#';
+        a.className = 'nav-item nav-link sidebar-link';
+        a.innerHTML = `<i class="fa fa-wrench me-2"></i>${escapeHtml(action.label)}`;
+        a.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (!loadedFileData) {
+                log('Brak pliku binarnego do operacji.', 'WARN');
+                return;
+            }
+            const copy = new Uint8Array(loadedFileData);
+            const msg = action.apply(copy);
+            downloadBin(copy, action.filename);
+            log(msg + `, pobrano plik: ${action.filename}`, 'RESULT');
+        });
+        fileActionsEl.appendChild(a);
+    });
+}
+
+buildComingSoon();
 
 // Auto-identify and decode
 function identifyDecoder(data) {
@@ -152,6 +227,8 @@ decodeBtn.addEventListener('click', () => {
 
     log(`Rozpoznano moduł: ${match.decoder.name}`);
     const result = match.decoder.decode(loadedFileData);
+
+    populateFileActions(result);
 
     if (result.pin) {
         decodedCode.textContent = result.pin;
@@ -243,16 +320,7 @@ decodeBtn.addEventListener('click', () => {
         resetBtn.addEventListener('click', () => {
             const copy = new Uint8Array(loadedFileData);
             result.reset.offsets.forEach(off => { copy[off] = result.reset.value; });
-
-            const blob = new Blob([copy], { type: 'application/octet-stream' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = result.reset.filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            downloadBin(copy, result.reset.filename);
             log(`Zresetowano licznik prób, pobrano plik: ${result.reset.filename}`, 'RESULT');
         });
     }
@@ -262,6 +330,7 @@ decodeBtn.addEventListener('click', () => {
 clearBtn.addEventListener('click', () => {
     clearFile();
     decodedCode.textContent = '—';
+    populateFileActions(null);
     log('Wyczyszczono dane wejściowe');
 });
 

@@ -159,6 +159,43 @@ body {
     height: 10px;
 }
 
+.sidebar-menu-title {
+    padding: 12px 20px 4px;
+    color: var(--light);
+    font-size: var(--font-size-sm);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.sidebar .navbar .navbar-nav .nav-link .coming-soon-badge {
+    margin-left: auto;
+    font-size: 10px;
+    color: var(--color-bg);
+    background: var(--primary);
+    border-radius: 30px;
+    padding: 2px 8px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+.sidebar .navbar .navbar-nav .nav-link.coming-soon {
+    cursor: not-allowed;
+    color: #3d4050;
+}
+
+.sidebar .navbar .navbar-nav .nav-link.coming-soon:hover,
+.sidebar .navbar .navbar-nav .nav-link.coming-soon.active {
+    color: #3d4050;
+    background: transparent;
+    border-color: var(--secondary);
+}
+
+.sidebar .navbar .navbar-nav .nav-link.coming-soon i {
+    background: var(--dark);
+    opacity: 0.6;
+}
+
 .sidebar-role {
     color: var(--light);
     font-size: var(--font-size-sm);

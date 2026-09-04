@@ -93,6 +93,22 @@ Dekodery Astra H i Zafira B mają funkcję **reset licznika prób**:
 
 Nowe pola w wyniku dekodera: `remainingTries`, `reset` (obiekt). Dodawane do dekoderów Astra/Zafira i renderowane w `app.js`.
 
+## Sidebar menu — operacje na pliku
+
+Sidebar (lewe menu) ma sekcję **"Operacje na pliku"** budowaną dynamicznie w `app.js` z pola `actions` wyniku dekodera, oraz sekcję **"Nadchodzące"** z 5 placeholderami `COMMING SOON`.
+
+- Każdy dekoder może zwrócić `actions: [{ id, label, filename, apply(copy) }]` w `decode()`
+- `apply(copy)` mutuje kopię `loadedFileData` (Uint8Array) i zwraca komunikat (string) do logu
+- `app.js` `populateFileActions(result)` renderuje akcje; kliknięcie kopiuje dane, wywołuje `apply()`, pobiera wynik przez `downloadBin()`
+- Gdy brak rozpoznanego modułu / brak akcji — placeholder "Rozpoznaj moduł, aby zobaczyć operacje"
+- `showInput()` i `clearBtn` resetują menu przez `populateFileActions(null)`
+- `downloadBin(bytes, filename)` — wspólny helper pobierania (używany też przez przycisk reset)
+- COMMING SOON: `COMING_SOON_ITEMS` w `app.js` (5 pozycji), klik loguje info
+
+Realne akcje w Astra H / Zafira B:
+- `reset-counter` — `apply`: `copy[0x1E3] = 0x00`
+- `clear-pin` — `apply`: `PIN_OFFSETS.forEach(o => copy[o] &= 0xF0)` (zeruje niskie nibble PIN)
+
 ## Styling rules (non-obvious)
 
 UI follows the **DarkPan** Bootstrap 5 admin template (sidebar + navbar + content cards). Theme vars in `style.css` `:root`:
