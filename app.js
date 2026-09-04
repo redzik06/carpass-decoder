@@ -193,7 +193,7 @@ decodeBtn.addEventListener('click', () => {
         </div>` : ''}
         ${result.remainingTries !== undefined ? `
         <div class="result-item">
-            <span class="result-label">Pozostałe próby</span>
+            <span class="result-label">Nieudane próby</span>
             <span class="result-value">${escapeHtml(result.remainingTries)}</span>
         </div>` : ''}
         ${result.reset !== undefined ? `

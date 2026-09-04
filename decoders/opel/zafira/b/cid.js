@@ -77,10 +77,7 @@
         log(`PIN CarPass: ${pin}`, 'RESULT');
         log(`Code Index: ${codeIndex}`, 'INFO');
         log(`Serial: ${serial}`, 'INFO');
-        log(`Pozostałe próby: ${remainingTries}`, 'INFO');
-        if (TRY_COUNTER_OFFSETS.length > 1) {
-            log(`Pozostałe próby (2. pole): ${data[TRY_COUNTER_OFFSETS[1]]}`, 'INFO');
-        }
+        log(`Nieudane próby: ${remainingTries}`, 'INFO');
 
         return {
             vin,
