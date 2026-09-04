@@ -191,6 +191,16 @@ decodeBtn.addEventListener('click', () => {
             <span class="result-label">Serial</span>
             <span class="result-value">${escapeHtml(result.serial)}</span>
         </div>` : ''}
+        ${result.remainingTries !== undefined ? `
+        <div class="result-item">
+            <span class="result-label">Pozostałe próby</span>
+            <span class="result-value">${escapeHtml(result.remainingTries)}</span>
+        </div>` : ''}
+        ${result.reset !== undefined ? `
+        <div class="result-item" style="flex-direction: column; align-items: stretch; gap: 6px;">
+            <span class="result-label">Reset licznika prób</span>
+            <button id="reset-counter-btn" class="reset-btn">Pobierz zresetowany dump</button>
+        </div>` : ''}
         <div class="result-item">
             <span class="result-label">Moduł</span>
             <span class="result-value">${escapeHtml(result.moduleName)}</span>
@@ -210,6 +220,26 @@ decodeBtn.addEventListener('click', () => {
     `;
 
     showOutput();
+
+    const resetBtn = document.getElementById('reset-counter-btn');
+    if (resetBtn && result.reset) {
+        resetBtn.addEventListener('click', () => {
+            const copy = new Uint8Array(loadedFileData);
+            result.reset.offsets.forEach(off => { copy[off] = 0x00; });
+            result.reset.extraBytes.forEach(([off, val]) => { copy[off] = val; });
+
+            const blob = new Blob([copy], { type: 'application/octet-stream' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = result.reset.filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            log(`Zresetowano licznik prób, pobrano plik: ${result.reset.filename}`, 'RESULT');
+        });
+    }
 });
 
 // Clear button handler

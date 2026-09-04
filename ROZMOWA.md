@@ -200,3 +200,23 @@ Kluczowe odkrycie: **marker na 0xC2 odróżnia te dwa moduły**:
 `identify()` obu dekoderów czysto po markerze. Zweryfikowano:
 - Zafira B: VIN `W0L0AHM5725025704`, PIN `8838` (zgodny z nazwą pliku), Code Index `00052`, Serial `ESES5D022DM0TS`
 - Wszystkie 6 plików testowych poprawnie identyfikowane bez konfliktu
+
+### 11. Zresetowany dump (licznik prób) - implementacja
+
+**Użytkownik:** "wracamy do twojego odkrycia odnosnie pliku zresetowany, dodajemy ta fukcje do astry i zafiry"
+
+Implementacja funkcji **odczyt + reset/wypis** licznika prób w dekoderach Astra H i Zafira B.
+
+Użytkownik potwierdził znaczenie bajta: **"was down to 5 tries remaining"** — Astra z `0x1E3=0x05` miała 5 pozostałych prób. Wartość bajta = liczba pozostałych prób.
+
+Analiza plików resetu (ten sam pojazd co `astra h cid 93c66.BIN`):
+- Astra oryginał: `0x1E3=0x05`, `0x1E8=0x05` (5 pozostałych prób, 2 pola)
+- `zrestetowany.BIN`: zeruje tylko `0x1E3` → `0x00` (reset częściowy, 0x1E8 został 5)
+- `zresetowany 10.BIN`: zeruje `0x1E3` i `0x1E8` → `0x00` + kasuje bajty PIN na 0xFF (reset pełny)
+
+Funkcja (Astra H + Zafira B):
+- `decode()` zwraca `remainingTries` (wartość 0x1E3) oraz obiekt `reset: { offsets, extraBytes, filename }`
+- `app.js` renderuje przycisk "Pobierz zresetowany dump" — kopiuje `loadedFileData`, zeruje pola z `reset.offsets` (0x1E3 i 0x1E8) i pobiera zmodyfikowany plik
+- Vectra C bez licznika — brak pola reset
+
+Zweryfikowano w testach: Astra remainingTries=5, Zafira remainingTries=0, Vectra bez pola reset. Wszystkie 6 plików + reset dekodowane poprawnie.

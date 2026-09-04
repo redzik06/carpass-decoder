@@ -74,7 +74,18 @@ VIN Zafiry: `W0L0AHM` + 10 cyfr/znaków z 0xC8 (np. `W0L0AHM5725025704`). PIN Ca
 
 ## Zresetowany dump (licznik prób)
 
-Plik `zrestetowany.BIN` = ten sam pojazd co `astra h cid 93c66.BIN` (identyczny VIN), różni się tylko na 0x1E3 — to pole licznika pozostałych prób (0x1E2 / 0x1E9 wg źródła 3rd-party). Obsługa resetu licznika to planowany przyszły krok w Astra i Zafira dekoderach.
+Licznik pozostałych prób PIN — pole **0x1E3** (i drugie pole **0x1E8**). Wartość bajta = liczba pozostałych prób (np. `0x05` = 5 pozostałych; potwierdzone: "was down to 5 tries remaining").
+
+Testowe pliki resetu (ten sam pojazd co `astra h cid 93c66.BIN`):
+- `zrestetowany.BIN` — różni się od Astry tylko na 0x1E3 (`0x05` → `0x00`), 0x1E8 pozostał `0x05` (reset częściowy / 1 pole)
+- `zresetowany 10.BIN` — zeruje 0x1E3 i 0x1E8 oraz kasuje bajty PIN regionu na 0xFF (reset pełny / 2 pola)
+
+Dekodery Astra H i Zafira B mają funkcję **reset licznika prób**:
+- zwracają `remainingTries` (wartość 0x1E3) i `reset: { offsets, extraBytes, filename }`
+- `app.js` renderuje przycisk "Pobierz zresetowany dump", który kopiuje `loadedFileData`, zeruje pola z `reset.offsets` (0x1E3 i 0x1E8 do 0x00), i pobiera zmodyfikowany plik
+- Vectra C NIE ma tego pola (brak takiego licznika) — reset tylko w Astra/Zafira
+
+Nowy pole w wyniku dekodera: `remainingTries`, `reset` (obiekt). Dodawane do dekoderów Astra/Zafira i renderowane w `app.js`.
 
 ## Styling rules (non-obvious)
 

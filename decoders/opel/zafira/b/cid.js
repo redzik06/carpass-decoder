@@ -23,6 +23,10 @@
     // PIN CarPass - niskie nibble bajtów (wzorzec jak Astra H, przesunięty)
     const PIN_OFFSETS = [0x1E2, 0x1E6, 0x1E5, 0x1E9];
 
+    // Licznik pozostałych prób PIN - pola zerowane przy resycie
+    const TRY_COUNTER_OFFSETS = [0x1E3, 0x1E8];
+    const RESET_EXTRA_BYTES = [];
+
     // Metadane
     const CODE_INDEX_OFFSET = 0x00;
     const CODE_INDEX_LENGTH = 6;
@@ -65,12 +69,17 @@
         const pin = readPin(data);
         const codeIndex = readCodeIndex(data);
         const serial = readAscii(data, SERIAL_OFFSET, SERIAL_LENGTH);
+        const remainingTries = data[TRY_COUNTER_OFFSETS[0]];
 
         log(`VIN prefix ${VIN_PREFIX} podmieniony (uszkodzony początek w dumpie)`);
         log(`VIN: ${vin}`, 'RESULT');
         log(`PIN CarPass: ${pin}`, 'RESULT');
         log(`Code Index: ${codeIndex}`, 'INFO');
         log(`Serial: ${serial}`, 'INFO');
+        log(`Pozostałe próby: ${remainingTries}`, 'INFO');
+        if (TRY_COUNTER_OFFSETS.length > 1) {
+            log(`Pozostałe próby (2. pole): ${data[TRY_COUNTER_OFFSETS[1]]}`, 'INFO');
+        }
 
         return {
             vin,
@@ -82,6 +91,12 @@
             vehicle: 'Zafira B',
             codeIndex,
             serial,
+            remainingTries: String(remainingTries),
+            reset: {
+                offsets: TRY_COUNTER_OFFSETS,
+                extraBytes: RESET_EXTRA_BYTES,
+                filename: `zafira-b-${pin}-reset.bin`,
+            },
         };
     }
 
