@@ -181,3 +181,22 @@ Common checks:
 - Decoders call `log()` during decode — it depends on DOM being ready
 - `window.carpassDecoders` must be initialized before decoders load (app.js handles this implicitly since it runs first)
 - UI is in Polish — keep all user-facing strings in Polish
+
+## Zmiana VIN (EDC16) + suma kontrolna
+
+Oba dekodery EDC16 mają akcję `change-vin` w menu (Operacje na pliku). `apply(copy)`:
+1. Pobiera nowy VIN przez `window.prompt` (walidacja: 17 znaków, dozwolone `0-9 A-H J-N P-Z`)
+2. Wpisuje go we WSZYSTKIE kopie VIN (`writeVin`)
+3. Przelicza sumy kontrolne mapy (`fixChecksums`) i pobiera nowy plik
+
+**Algorytm checksum EDC16 (zweryfikowany na plikach testowych):**
+```
+checksum = (0xFFFF XOR suma[ start .. end-1 ]) - blockNumber    // 16-bit
+```
+Checksum zapisywany jako 2 bajty big-endian na offsetach `[end]`, `[end+1]`.
+
+Mapy pól pochodzą z narzędzia `crc.part1/edc16_crc_tool.exe` (podkatalog `ecu/`):
+- `crc.part1/ecu/Opel edc16c9.txt` — **EDC16C9**, mapa **per blok 2048** (31 par), stosowana do KAŻDEGO bloku (Zafira: 2 bloki → 62 pary). VIN kopie: `0xC2, 0xE2, 0x8C2, 0x8E2`.
+- `crc.part1/ecu/Opel edc16c39.txt` — **EDC16C9-39**, mapa **absolutna dla 0x000-0xFFF** (35 par, offsety do 0x93E). VIN kopie: `0x1A0, 0x1C0` (dane tylko w blokach 0-1; bloki 2-3 puste FF).
+
+Uwaga: `chk` pary 4-5 (C9) i 8-9 (C9-39) obejmują VIN — po zmianie VIN przeliczamy wszystkie pary mapy (bezpieczniej). `validateChecksums(copy)` zwraca liczbę poprawnych pól (użyte w komunikacie).
