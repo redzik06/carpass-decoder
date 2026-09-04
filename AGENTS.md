@@ -7,8 +7,9 @@ Static HTML/CSS/JS app for decoding Opel CarPass EEPROM dumps. No build step, no
 ## Architecture
 
 - `carpass-decoder.html` — entry point, loads `app.js` then decoder scripts
-- `app.js` — file upload, auto-identify, decode flow, view switching, scaling
-- `style.css` — high-contrast black theme, linear viewport scaling
+- `app.js` — file upload, auto-identify, decode flow, view switching, sidebar toggle, scaling
+- `style.css` — DarkPan admin theme (sidebar + navbar + cards), linear viewport scaling
+- `css/bootstrap.min.css` — Bootstrap 5 themed red (`$primary: #EB1616`, copied from darkpan)
 - `decoders/` — each decoder is a self-registering IIFE
 
 ## Decoder pattern
@@ -94,11 +95,16 @@ Nowe pola w wyniku dekodera: `remainingTries`, `reset` (obiekt). Dodawane do dek
 
 ## Styling rules (non-obvious)
 
-- `border-radius` is always `0` — all sharp edges, no rounded corners
-- `--color-bg: #000000` (pure black), `--color-border: #ffffff` (white)
-- `--color-primary: #ff0000`, `--color-success: #00ff00`
+UI follows the **DarkPan** Bootstrap 5 admin template (sidebar + navbar + content cards). Theme vars in `style.css` `:root`:
+- `--primary: #EB1616`, `--secondary: #191C24`, `--light: #6C7293`, `--dark: #000000`
+- `--color-primary: #EB1616`, `--color-success: #00ff00` (aliases used by `app.js` inline styles)
+
+- `bootstrap.min.css` in `css/` is the darkpan build with `$primary: #EB1616` baked in — `.btn-primary`, `.text-primary` are already red; keep it, don't replace with stock Bootstrap
+- DarkPan uses **rounded** corners (cards/buttons) — modern look; do NOT force `border-radius: 0`
 - Page is fixed at `width: 1920px` and uses JS `transform: scale()` to fit any viewport — never add responsive breakpoints or media queries
-- Both panels must always fill full viewport height (they're `flex: 1`)
+- Sidebar is `250px`, content fills the rest (`1670px`); `.content.open` expands to `1920px` when `.sidebar.open`
+- Both panels/cards must always fill full viewport height (they're `flex: 1`)
+- Font Awesome 5 icons via CDN for sidebar/navbar icons
 
 ## Adding a new decoder
 

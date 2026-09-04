@@ -1,57 +1,117 @@
 <!DOCTYPE html>
 <html lang="pl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Opel CarPass Decoder</title>
+    <title>Opel CarPass Decoder - DarkPan</title>
+
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <div class="container">
-        <main>
-            <!-- Input Section -->
-            <section class="card" id="input-section" aria-labelledby="input-heading">
-                <h2 id="input-heading" class="card-title">Dane wejściowe</h2>
 
-                <div class="form-group">
-                    <label>Plik binarny</label>
-                    <div class="file-upload-area" id="file-upload-area">
-                        <input type="file" id="file-input" accept=".bin,.dat,.hex,.raw,*/*" />
-                        <label class="file-upload-label" for="file-input">
-                            Kliknij lub upuść plik binarny tutaj
-                        </label>
-                        <div class="file-info" id="file-info"></div>
+<body>
+    <div class="container-fluid position-relative d-flex p-0">
+
+        <!-- Sidebar Start -->
+        <div class="sidebar pe-4 pb-3">
+            <nav class="navbar bg-secondary navbar-dark">
+                <a href="#" class="navbar-brand mx-4 mb-3">
+                    <h3 class="text-primary brand-title"><i class="fa fa-car me-2"></i>CarPass</h3>
+                </a>
+                <div class="d-flex align-items-center ms-4 mb-4">
+                    <div class="position-relative">
+                        <div class="avatar-icon rounded-circle text-white"><i class="fa fa-user"></i></div>
+                        <div class="avatar-status bg-success rounded-circle border border-2 border-secondary position-absolute end-0 bottom-0"></div>
+                    </div>
+                    <div class="ms-3">
+                        <h6 class="mb-0 sidebar-user">Opel Decoder</h6>
+                        <span class="sidebar-role">EEPROM / VIN</span>
                     </div>
                 </div>
-
-                <div class="btn-group">
-                    <button type="button" class="btn btn-primary" id="decode-btn">
-                        Dekoduj CarPass
-                    </button>
-                    <button type="button" class="btn btn-secondary" id="clear-btn">
-                        Wyczyść
-                    </button>
+                <div class="navbar-nav w-100">
+                    <a href="#" class="nav-item nav-link active sidebar-link" id="nav-input"><i class="fa fa-tachometer-alt me-2"></i>Dane wejściowe</a>
+                    <a href="#" class="nav-item nav-link sidebar-link" id="nav-output"><i class="fa fa-file-alt me-2"></i>Dane wyjściowe</a>
                 </div>
-            </section>
+            </nav>
+        </div>
+        <!-- Sidebar End -->
 
-            <!-- Output Section -->
-            <section class="card results-area" id="output-section" aria-labelledby="output-heading">
-                <h2 id="output-heading" class="card-title">
-                    <button type="button" class="back-btn" id="back-btn" aria-label="Powrót do formularza">&larr;</button>
-                    Dane wyjściowe
-                </h2>
+        <!-- Content Start -->
+        <div class="content">
 
-                <div class="result-item" style="border-bottom: 2px solid var(--color-border); padding-bottom: var(--space-4); margin-bottom: var(--space-4);">
-                    <span class="result-label">Kod CarPass</span>
-                    <span class="result-value" id="decoded-code" style="color: var(--color-success); font-size: var(--font-size-lg);">—</span>
+            <!-- Navbar Start -->
+            <nav class="navbar navbar-expand bg-secondary navbar-dark sticky-top px-4 py-0 main-navbar">
+                <a href="#" class="sidebar-toggler flex-shrink-0 nav-toggle">
+                    <i class="fa fa-bars"></i>
+                </a>
+                <div class="navbar-nav align-items-center ms-auto">
+                    <span class="navbar-title">Opel CarPass Decoder</span>
                 </div>
+            </nav>
+            <!-- Navbar End -->
 
-                <div id="results-content" style="flex-shrink: 0;"></div>
+            <!-- Main Content -->
+            <div class="container-fluid pt-4 px-4 app-content">
 
-                <h3 style="font-size: var(--font-size-lg); margin-top: var(--space-6); margin-bottom: var(--space-3); padding-bottom: var(--space-2); border-bottom: 1px solid var(--color-border); flex-shrink: 0;">Log operacji</h3>
-                <div id="log-output" class="log-output"></div>
-            </section>
-        </main>
+                <!-- Input Section -->
+                <section class="card bg-secondary rounded p-4 card-app" id="input-section" aria-labelledby="input-heading">
+                    <h2 id="input-heading" class="card-title text-white">
+                        <i class="fa fa-upload me-2 text-primary"></i>Dane wejściowe
+                    </h2>
+
+                    <div class="form-group">
+                        <label class="text-white">Plik binarny</label>
+                        <div class="file-upload-area" id="file-upload-area">
+                            <input type="file" id="file-input" accept=".bin,.dat,.hex,.raw,*/*" />
+                            <label class="file-upload-label" for="file-input">
+                                <i class="fa fa-cloud-upload-alt me-2"></i>Kliknij lub upuść plik binarny tutaj
+                            </label>
+                            <div class="file-info" id="file-info"></div>
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-primary" id="decode-btn">
+                            <i class="fa fa-key me-2"></i>Dekoduj CarPass
+                        </button>
+                        <button type="button" class="btn btn-secondary btn-app-secondary" id="clear-btn">
+                            <i class="fa fa-eraser me-2"></i>Wyczyść
+                        </button>
+                    </div>
+                </section>
+                <!-- Input Section End -->
+
+                <!-- Output Section -->
+                <section class="card bg-secondary rounded p-4 card-app results-area" id="output-section" aria-labelledby="output-heading">
+                    <h2 id="output-heading" class="card-title text-white">
+                        <button type="button" class="back-btn" id="back-btn" aria-label="Powrót do formularza">
+                            <i class="fa fa-arrow-left"></i>
+                        </button>
+                        <i class="fa fa-file-alt me-2 text-primary"></i>Dane wyjściowe
+                    </h2>
+
+                    <div class="result-item result-code-item">
+                        <span class="result-label">Kod CarPass</span>
+                        <span class="result-value result-code" id="decoded-code">—</span>
+                    </div>
+
+                    <div id="results-content"></div>
+
+                    <h3 class="log-title text-white">
+                        <i class="fa fa-terminal me-2 text-primary"></i>Log operacji
+                    </h3>
+                    <div id="log-output" class="log-output"></div>
+                </section>
+                <!-- Output Section End -->
+
+            </div>
+            <!-- Main Content End -->
+
+        </div>
+        <!-- Content End -->
+
     </div>
 
     <script src="app.js"></script>
@@ -59,4 +119,5 @@
     <script src="decoders/opel/zafira/b/cid.js"></script>
     <script src="decoders/opel/vectra/c/cid.js"></script>
 </body>
+
 </html>

@@ -244,3 +244,18 @@ Użytkownik wyjaśnił, że pole ma pokazywać **liczbę nieudanych prób progra
 - Przycisk "Pobierz zresetowany dump" zeruje 0x1E3 do 0x00 (wzorzec zrestetowany.BIN)
 
 Plus updated AGENTS.md.
+
+### 14. Restyle na DarkPan 1.0.0
+
+Użytkownik poprosił o zmianę stylu na szablon admin **DarkPan 1.0.0** (katalog `darkpan-1.0.0/`). Wybrano opcję "Dokładna kopia layoutu darkpan" (sidebar + navbar + content).
+
+Zmiany:
+- Skopiowano `darkpan-1.0.0/css/bootstrap.min.css` do `css/bootstrap.min.css` (build z `$primary: #EB1616` — czerwony primary, `.btn-primary`/`.text-primary` już czerwone)
+- `carpass-decoder.html` przebudowany na strukturę darkpan: `.sidebar` (250px, `--secondary #191C24`) + `.content` (1670px, `--dark #000000`) z `.main-navbar` (sticky, hamburger toggle) i `.app-content` (dwie karty `.card-app`)
+- `style.css` przepisany na zmienne darkpan (`--primary`, `--secondary`, `--light`, `--dark`) + aliasy `--color-*` używane przez app.js (`--color-primary`, `--color-success`)
+- Zapisano **rounded** (darkpan) zamiast wcześniejszego `border-radius: 0`
+- `app.js`: dodano sidebar toggle (vanilla JS, bez jQuery) + nawigacja sidebar (nav-input/nav-output) z highlight aktywności
+- `.gitignore` dodano `darkpan-1.0.0/` (szablon źródłowy nie jest częścią appki)
+- Weryfikacja: wszystkie ID/klasy używane przez app.js istnieją w HTML, wszystkie `var(--color-*)` zdefiniowane, brak błędów składni JS, nawiasy CSS zbilansowane; screenshot narzędziami headless niemożliwy w sandboxie (SWGL fail)
+
+Plus updated AGENTS.md.

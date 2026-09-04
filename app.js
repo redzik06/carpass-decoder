@@ -93,15 +93,32 @@ function log(message, type = 'INFO') {
     logOutput.scrollTop = logOutput.scrollHeight;
 }
 
+// Sidebar navigation
+const navInput = document.getElementById('nav-input');
+const navOutput = document.getElementById('nav-output');
+
+navInput.addEventListener('click', (e) => { e.preventDefault(); showInput(); });
+navOutput.addEventListener('click', (e) => { e.preventDefault(); showOutput(); });
+
+document.querySelector('.sidebar-toggler').addEventListener('click', (e) => {
+    e.preventDefault();
+    document.querySelector('.sidebar').classList.toggle('open');
+    document.querySelector('.content').classList.toggle('open');
+});
+
 // View switching
 function showOutput() {
     inputSection.style.display = 'none';
     outputSection.classList.add('active');
+    navInput.classList.remove('active');
+    navOutput.classList.add('active');
 }
 
 function showInput() {
     outputSection.classList.remove('active');
     inputSection.style.display = '';
+    navOutput.classList.remove('active');
+    navInput.classList.add('active');
 }
 
 backBtn.addEventListener('click', showInput);
