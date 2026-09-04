@@ -186,3 +186,17 @@ Struktura Astra H jest INNA niż Vectra C. Wyciągnięto co się dało bez refer
 ### 9. Zresetowany dump (licznik prób)
 
 `zrestetowany.BIN` to ten sam pojazd co `astra h cid 93c66.BIN` (identyczny VIN), różni się tylko na 0x1E3 — pole licznika pozostałych prób. Obsługa resetu licznika to planowany przyszły krok w dekoderach Astra i Zafira.
+
+### 10. Zafira B = struktura Astra H (poprawka)
+
+**Użytkownik:** "zafira uzywa tego co astra h, roznica to vin, dla zafiry w0l0ahm"
+
+Poprawiono dekoder Zafira B — używa tej samej przesuniętej struktury co Astra H, nie układu Vectra C. Dostarczono prawdziwy dump `zafira b cid pin 8838 93C66.bin` do weryfikacji.
+
+Kluczowe odkrycie: **marker na 0xC2 odróżnia te dwa moduły**:
+- Astra H: `L0A0LH` (litera `L` na 0xC6)
+- Zafira B: `L0A0MH` (litera `M` na 0xC6)
+
+`identify()` obu dekoderów czysto po markerze. Zweryfikowano:
+- Zafira B: VIN `W0L0AHM5725025704`, PIN `8838` (zgodny z nazwą pliku), Code Index `00052`, Serial `ESES5D022DM0TS`
+- Wszystkie 6 plików testowych poprawnie identyfikowane bez konfliktu

@@ -64,6 +64,14 @@ VIN zaczyna się na 0xC0 z `0x00` po 'W', a prawdziwy VIN odtwarza się z prefix
 - Serial: ASCII na 0x194 (14 bajtów, np. `ESES5D021DM1TS`)
 - **Brak** zmapowanych pól Ident / Part Number / Hardware Number — wymagają referencji (jak dla Vectra) do zmapowania.
 
+## Zafira B (przesunięty układ, jak Astra H)
+
+Zafira B używa **tej samej struktury co Astra H** (przesunięty VIN na 0xC0), różni się tylko prefixem VIN `W0L0AHM` (Astra H: `W0L0AHL`). Rozróżnienie w `identify()` opiera się na markerze na 0xC2 (6 bajtów):
+- Astra H: marker `L0A0LH` (litera `L` na 0xC6)
+- Zafira B: marker `L0A0MH` (litera `M` na 0xC6)
+
+VIN Zafiry: `W0L0AHM` + 10 cyfr/znaków z 0xC8 (np. `W0L0AHM5725025704`). PIN CarPass: jak Astra H, `(0x1E2)(0x1E6)(0x1E5)(0x1E9)` (zweryfikowano: `zafira b cid pin 8838 93C66.bin` → PIN `8838`). Code Index i Serial — jak Astra H.
+
 ## Zresetowany dump (licznik prób)
 
 Plik `zrestetowany.BIN` = ten sam pojazd co `astra h cid 93c66.BIN` (identyczny VIN), różni się tylko na 0x1E3 — to pole licznika pozostałych prób (0x1E2 / 0x1E9 wg źródła 3rd-party). Obsługa resetu licznika to planowany przyszły krok w Astra i Zafira dekoderach.

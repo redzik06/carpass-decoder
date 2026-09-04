@@ -1,5 +1,7 @@
 // Decoder: CID Zafira B (93C66 EEPROM)
 // Wyświetlacz zestawu wskaźników - Zafira B
+// UWAGA: Zafira B używa tej samej struktury co Astra H (przesunięty VIN na 0xC0).
+// Różnica to tylko prefix VIN: W0L0AHM (Astra H: W0L0AHL).
 
 (function () {
     const MODULE_ID = 'cid-zafira-b';
@@ -8,21 +10,33 @@
     const VIN_PREFIX = 'W0L0AHM';
     const EXPECTED_SIZE = 512;
 
-    const VIN_OFFSET = 0xC1;
-    const VIN_LENGTH = 17;
+    // Marker specyficzny dla Zafira B w dumpie (przesunięte VDS)
+    // Zafira B: L0A0MH na 0xC2 (Astra H ma L0A0LH - to je odróżnia)
+    const VDS_MARKER = 'L0A0MH';
+    const VDS_OFFSET = 0xC2;
+    const VDS_LENGTH = 6;
 
-    // PIN CarPass - niskie nibble bajtów (wzorzec wspólny z Vectra C)
-    const PIN_OFFSETS = [0x1E3, 0x1E7, 0x1E4, 0x1E8];
+    // Ostatnie 10 znaków VIN (cyfry) czytane z dumpu
+    const DIGITS_OFFSET = 0xC8;
+    const DIGITS_LENGTH = 10;
 
-    // Metadane (jak Vectra C - standardowy układ)
+    // PIN CarPass - niskie nibble bajtów (wzorzec jak Astra H, przesunięty)
+    const PIN_OFFSETS = [0x1E2, 0x1E6, 0x1E5, 0x1E9];
+
+    // Metadane
     const CODE_INDEX_OFFSET = 0x00;
-    const CODE_INDEX_LENGTH = 5;
-    const HW_OFFSET = 0x18C;   // Hardware Number (BE int32)
-    const PART_OFFSET = 0x190; // Part Number (BE int32)
-    const IDENT_OFFSET = 0x194;
-    const IDENT_LENGTH = 2;
-    const DATA_VERSION_OFFSET = 0x196;
-    const DATA_VERSION_LENGTH = 4;
+    const CODE_INDEX_LENGTH = 6;
+    const SERIAL_OFFSET = 0x194;
+    const SERIAL_LENGTH = 14;
+
+    function readDigits(data) {
+        const bytes = data.slice(DIGITS_OFFSET, DIGITS_OFFSET + DIGITS_LENGTH);
+        return String.fromCharCode(...bytes);
+    }
+
+    function readVin(data) {
+        return VIN_PREFIX + readDigits(data);
+    }
 
     function readPin(data) {
         return PIN_OFFSETS.map(off => data[off] & 0x0F).join('');
@@ -32,39 +46,31 @@
         return String.fromCharCode(...data.slice(offset, offset + length)).trim();
     }
 
-    function readIntBE(data, offset, length) {
-        let value = 0;
-        for (let i = 0; i < length; i++) {
-            value = value * 256 + data[offset + i];
-        }
-        return value;
+    function readCodeIndex(data) {
+        const bytes = data.slice(CODE_INDEX_OFFSET, CODE_INDEX_OFFSET + CODE_INDEX_LENGTH);
+        const ascii = bytes.filter(b => b >= 0x20 && b < 0x7F);
+        return ascii.length ? String.fromCharCode(...ascii) : '';
     }
 
     function identify(data) {
         if (data.length !== EXPECTED_SIZE) return false;
 
-        const vinBytes = data.slice(VIN_OFFSET, VIN_OFFSET + VIN_LENGTH);
-        const vin = String.fromCharCode(...vinBytes);
-        return vin.startsWith(VIN_PREFIX);
+        // Marker w dumpie odróżnia Zafirę B (L0A0MH) od Astry H (L0A0LH)
+        const marker = String.fromCharCode(...data.slice(VDS_OFFSET, VDS_OFFSET + VDS_LENGTH));
+        return marker === VDS_MARKER;
     }
 
     function decode(data) {
-        const vin = readAscii(data, VIN_OFFSET, VIN_LENGTH);
+        const vin = readVin(data);
         const pin = readPin(data);
-        const codeIndex = readAscii(data, CODE_INDEX_OFFSET, CODE_INDEX_LENGTH);
-        const hwNumber = readIntBE(data, HW_OFFSET, 4);
-        const partNumber = readIntBE(data, PART_OFFSET, 4);
-        const ident = readAscii(data, IDENT_OFFSET, IDENT_LENGTH);
-        const dataVersion = readAscii(data, DATA_VERSION_OFFSET, DATA_VERSION_LENGTH);
+        const codeIndex = readCodeIndex(data);
+        const serial = readAscii(data, SERIAL_OFFSET, SERIAL_LENGTH);
 
-        log(`VIN offset: 0x${VIN_OFFSET.toString(16).toUpperCase()} - 0x${(VIN_OFFSET + VIN_LENGTH - 1).toString(16).toUpperCase()}`);
+        log(`VIN prefix ${VIN_PREFIX} podmieniony (uszkodzony początek w dumpie)`);
         log(`VIN: ${vin}`, 'RESULT');
         log(`PIN CarPass: ${pin}`, 'RESULT');
         log(`Code Index: ${codeIndex}`, 'INFO');
-        log(`Ident: ${ident}`, 'INFO');
-        log(`Part Number: ${partNumber}`, 'INFO');
-        log(`Hardware Number: ${hwNumber}`, 'INFO');
-        log(`Data Version: ${dataVersion}`, 'INFO');
+        log(`Serial: ${serial}`, 'INFO');
 
         return {
             vin,
@@ -75,10 +81,7 @@
             eeprom: '93C66 EEPROM',
             vehicle: 'Zafira B',
             codeIndex,
-            ident,
-            partNumber: String(partNumber),
-            hardwareNumber: String(hwNumber),
-            dataVersion,
+            serial,
         };
     }
 

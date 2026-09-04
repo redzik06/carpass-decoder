@@ -33,6 +33,10 @@
         return String.fromCharCode(...bytes);
     }
 
+    function readVin(data) {
+        return VIN_PREFIX + readDigits(data);
+    }
+
     function readPin(data) {
         return PIN_OFFSETS.map(off => data[off] & 0x0F).join('');
     }
@@ -51,14 +55,14 @@
     function identify(data) {
         if (data.length !== EXPECTED_SIZE) return false;
 
+        // Marker w dumpie odróżnia Astrę H (L0A0LH) od Zafiry B (L0A0MH)
         const marker = String.fromCharCode(...data.slice(VDS_OFFSET, VDS_OFFSET + VDS_LENGTH));
         return marker === VDS_MARKER;
     }
 
     function decode(data) {
         // Uszkodzony początek VIN pompijamy - podmieniamy na prawidłowy prefix
-        const digits = readDigits(data);
-        const vin = VIN_PREFIX + digits;
+        const vin = readVin(data);
         const pin = readPin(data);
         const codeIndex = readCodeIndex(data);
         const serial = readAscii(data, SERIAL_OFFSET, SERIAL_LENGTH);
