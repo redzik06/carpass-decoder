@@ -275,3 +275,19 @@ Implementacja:
 - Weryfikacja: test funkcjonalny na `astra h cid 93c66.BIN` — reset zmienia tylko 0x1E3 (1 bajt), clear-pin zmienia PIN 0688 → 0000; JS syntax OK; wszystkie ID/CSS zdefiniowane
 
 Plus updated AGENTS.md.
+
+### 16. Dekodery EDC16 (sterownik silnika Bosch)
+
+Użytkownik wrzucił dwa pliki EEPROM EDC16 do `test pliki/edc16/`. Jeden był nazwany "vectra c", ale okazało się, że to Zafira B — **zapamiętane: nazwa pliku nie decyduje, VIN decyduje** (W0L0AHM = Zafira).
+
+Analiza ujawniła regułę PIN EDC16: **4 bajty ASCII cyfr** poprzedzone bajtem `0x01`, w 3 kopiach co `0x40`. Offsety PIN różne między wariantami (0x483 vs 0x543).
+
+Zbudowano **dwa osobne dekodery**:
+- `decoders/opel/zafira/b/edc16c9.js` — EDC16C9, Zafira B Z19DTH (4096B), VIN `W0L0AHM7562133839`, PIN `7298`, Part `S001002830`, SW `1037379426`, daty `09-02-06`/`12-02-06`
+- `decoders/opel/vectra/c/edc16c9-39.js` — EDC16C9-39, Vectra C Z19DTH (8192B), VIN `W0L0ZCF3571119743`, PIN `6356`, Part `CH000010411`, SW `1037386702`, daty `29-04-07`/`03-05-07`
+
+Rozróżnienie C9 vs C9-39: Part Number (`S00...` vs `CH...`) + VIN prefix. W EEPROM EDC16 **nie ma** Hardware Number `0281xxxxxx` (jest tylko w kalibracji/flashu) — użyto `softwareNumber`.
+
+Dodano nowe pola wynikowe do template `app.js`: `softwareNumber`, `programDate`, `releaseDate`. Zarejestrowano scripty w `carpass-decoder.html`. Zweryfikowano: 5 dekoderów (3 CID + 2 EDC16) działa bez kolizji identyfikacji.
+
+Zaktualizowano AGENTS.md (sekcja EDC16).

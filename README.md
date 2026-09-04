@@ -121,6 +121,8 @@ Sekcja **„Nadchodzące" / „Coming soon"** zawiera pola na przyszłe funkcje 
 | **CID Astra H** | Opel | 93C66 EEPROM | VIN, PIN, Code Index, Serial, reset licznika, wykasuj PIN |
 | **CID Zafira B** | Opel | 93C66 EEPROM | VIN, PIN, Code Index, Serial, reset licznika, wykasuj PIN |
 | **CID Vectra C / Signum** | Opel | 93C66 EEPROM | VIN, PIN, Code Index, Ident, Part/Hardware Number, Data Version |
+| **EDC16C9 — Zafira B (Z19DTH)** | Opel / Bosch | EEPROM (4096B) | VIN, PIN (ASCII), Part Number, Software Number, daty |
+| **EDC16C9-39 — Vectra C (Z19DTH)** | Opel / Bosch | EEPROM (8192B) | VIN, PIN (ASCII), Part Number, Software Number, daty |
 
 > ⚠️ Dekodery odczytują dane z pliku **wprost** (zgodnie z ich zawartością). Rozpoznawanie działa tylko dla obsługiwanych modułów i prawidłowych plików.
 > *Decoders read data **directly** from the file (as-is). Identification works only for supported modules and correct files.*
@@ -140,7 +142,9 @@ carpass-decoder/
 │   └── opel/
 │       ├── astra/h/cid.js    # CID Astra H
 │       ├── zafira/b/cid.js   # CID Zafira B
-│       └── vectra/c/cid.js   # CID Vectra C / Signum
+│       ├── zafira/b/edc16c9.js      # EDC16C9 Zafira B (sterownik silnika)
+│       ├── vectra/c/cid.js   # CID Vectra C / Signum
+│       └── vectra/c/edc16c9-39.js   # EDC16C9-39 Vectra C (sterownik silnika)
 ├── AGENTS.md                 # notatki techniczne dla agentów / agents' technical notes
 └── ROZMOWA.md                # historia sesji roboczych / session log
 ```

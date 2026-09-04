@@ -280,6 +280,21 @@ decodeBtn.addEventListener('click', () => {
             <span class="result-label">Hardware Number</span>
             <span class="result-value">${escapeHtml(result.hardwareNumber)}</span>
         </div>` : ''}
+        ${result.softwareNumber !== undefined ? `
+        <div class="result-item">
+            <span class="result-label">Software Number</span>
+            <span class="result-value">${escapeHtml(result.softwareNumber)}</span>
+        </div>` : ''}
+        ${result.programDate !== undefined ? `
+        <div class="result-item">
+            <span class="result-label">Data programowania</span>
+            <span class="result-value">${escapeHtml(result.programDate)}</span>
+        </div>` : ''}
+        ${result.releaseDate !== undefined ? `
+        <div class="result-item">
+            <span class="result-label">Data (nagłówek)</span>
+            <span class="result-value">${escapeHtml(result.releaseDate)}</span>
+        </div>` : ''}
         ${result.serial !== undefined ? `
         <div class="result-item">
             <span class="result-label">Serial</span>

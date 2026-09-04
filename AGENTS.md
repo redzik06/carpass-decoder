@@ -73,6 +73,44 @@ Zafira B używa **tej samej struktury co Astra H** (przesunięty VIN na 0xC0), r
 
 VIN Zafiry: `W0L0AHM` + 10 cyfr/znaków z 0xC8 (np. `W0L0AHM5725025704`). PIN CarPass: jak Astra H, `(0x1E2)(0x1E6)(0x1E5)(0x1E9)` (zweryfikowano: `zafira b cid pin 8838 93C66.bin` → PIN `8838`). Code Index i Serial — jak Astra H.
 
+## EDC16 EEPROM (Bosch — sterownik silnika)
+
+Dwa osobne dekodery dla EEPROM-u sterowników silnika Bosch EDC16 (Opel 1.9 CDTI):
+- `decoders/opel/zafira/b/edc16c9.js` — **EDC16C9**, Zafira B Z19DTH, EXPECTED_SIZE 4096
+- `decoders/opel/vectra/c/edc16c9-39.js` — **EDC16C9-39**, Vectra C Z19DTH, EXPECTED_SIZE 8192
+
+**WAŻNE (identyfikacja):** rozpoznawanie po `identify()` = rozmiar + VIN prefix. VIN Zafiry `W0L0AHM`, Vectry `W0L0ZCF`. Plik może być wewnętrznie mylnie nazwany "Vectra C", ale to VIN decyduje — `W0L0AHM` = Zafira B.
+
+Rozmiary są rozłączne (4096 vs 8192), więc dekodery nie kolidują. **PIN w EDC16 to 4 bajty ASCII** (nie niskie nibble jak w CID!):
+
+**PIN (Security Code) EDC16 — reguła:**
+- PIN = 4 bajty **ASCII cyfr** (`'0'`–`'9'`), tuż przed nimi bajt `0x01` (wzorzec `01` + 4 cyfry)
+- Występuje w **3 kopiach co 0x40 (64 bajty)** w pliku
+- Offsety NIE są stałe między C9 a C9-39:
+  - EDC16C9 (Zafira, 4096B): PIN na `0x483/0x4C3/0x503`
+  - EDC16C9-39 (Vectra, 8192B): PIN na `0x543/0x583/0x5C3`
+
+**Inne pola (offsety różne między wariantami):**
+
+EDC16C9 Zafira (4096B):
+- VIN: ASCII na `0xC2` (czyste, np. `W0L0AHM7562133839`)
+- Part Number: ASCII na `0x462` (np. `S001002830`)
+- Software Number: ASCII na `0x26` (np. `1037379426`)
+- Duplikaty co `0x800` (2 kopie bloku)
+
+EDC16C9-39 Vectra (8192B):
+- VIN: ASCII na `0x1A0` (np. `W0L0ZCF3571119743`)
+- Part Number: ASCII na `0x607` (np. `CH000010411`)
+- Software Number: ASCII na `0x26` (np. `1037386702`)
+
+**Wspólny nagłówek (oba):** Software Number na `0x26`, drugi numer `//` na `0x34`, data na `0x07` i `0x12` (powtórzona na `0x20`).
+
+**C9 vs C9-39 — rozróżnienie:** Part Number (`S00...` Zafira vs `CH...` Vectra) + VIN prefix (`W0L0AHM` vs `W0L0ZCF`).
+
+**Uwaga o HW:** NIE używaj `hardwareNumber` w EDC16 — w samym EEPROM nie ma numeru `0281xxxxxx` (jest w kalibracji/flashu, nie w EEPROM). Użyj `softwareNumber`.
+
+Nowe pola wynikowe (dodane do template `app.js`): `softwareNumber`, `programDate`, `releaseDate`.
+
 ## Zresetowany dump (licznik prób / nieudane próby)
 
 Bajt **0x1E3** = liczba nieudanych prób programowania PIN. Aplikacja **odczytuje i wyświetla wartość wprost z wgrywanego pliku** (bez żadnego twardego mapowania — działa dla dowolnego pliku). Etykieta w UI: **"Nieudane próby"**.
