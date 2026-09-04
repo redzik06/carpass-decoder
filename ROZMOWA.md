@@ -220,3 +220,15 @@ Funkcja (Astra H + Zafira B):
 - Vectra C bez licznika — brak pola reset
 
 Zweryfikowano w testach: Astra remainingTries=5, Zafira remainingTries=0, Vectra bez pola reset. Wszystkie 6 plików + reset dekodowane poprawnie.
+
+### 12. KOREKTA funkcji reset - licznik 0x00 (jak wzorzec z forum)
+
+Użytkownik zgłosił, że otwierając `zrestetowany.BIN` / `zresetowany 10.BIN` widzi 0 zamiast 5. Okazało się, że te pliki **mają w środku 0x1E3=0x00** i to jest **poprawny, działający stan resetu** — potwierdzone wątkiem forum (Shooting: "PIN 0688 and here is reset, it was down to 5 tries remaining").
+
+Wcześniejsza zmiana na ustawianie licznika = 5 była błędna (wynikała z mylnej interpretacji, że 0 = zablokowane). Prawda: **0x1E3=0x00 = stan odblokowany umożliwiający programowanie**.
+
+Poprawka:
+- Przywrócono zerowanie licznika `0x1E3 → 0x00` (jak wzorzec `zrestetowany.BIN`)
+- Reset dotyczy TYLKO 0x1E3 (0x1E8 zostaje bez zmian, jak we wzorcu)
+- Zweryfikowano: wygenerowany przez przycisk plik jest **bit-identyczny** z `zrestetowany.BIN`
+- app.js log komunikat bez kwoty prób

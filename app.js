@@ -225,8 +225,7 @@ decodeBtn.addEventListener('click', () => {
     if (resetBtn && result.reset) {
         resetBtn.addEventListener('click', () => {
             const copy = new Uint8Array(loadedFileData);
-            result.reset.offsets.forEach(off => { copy[off] = 0x00; });
-            result.reset.extraBytes.forEach(([off, val]) => { copy[off] = val; });
+            result.reset.offsets.forEach(off => { copy[off] = result.reset.value; });
 
             const blob = new Blob([copy], { type: 'application/octet-stream' });
             const url = URL.createObjectURL(blob);

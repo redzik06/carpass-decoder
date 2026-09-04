@@ -23,9 +23,10 @@
     // PIN CarPass - niskie nibble bajtów (wzorzec jak Astra H, przesunięty)
     const PIN_OFFSETS = [0x1E2, 0x1E6, 0x1E5, 0x1E9];
 
-    // Licznik pozostałych prób PIN - pola zerowane przy resycie
-    const TRY_COUNTER_OFFSETS = [0x1E3, 0x1E8];
-    const RESET_EXTRA_BYTES = [];
+    // Licznik pozostałych prób PIN - pole zerowane przy resycie
+    // (wzorzec: zrestetowany.BIN od Shootinga ma 0x1E3=0x00 i pozwala programować)
+    const TRY_COUNTER_OFFSETS = [0x1E3];
+    const TRY_COUNTER_RESET = 0x00;
 
     // Metadane
     const CODE_INDEX_OFFSET = 0x00;
@@ -94,7 +95,7 @@
             remainingTries: String(remainingTries),
             reset: {
                 offsets: TRY_COUNTER_OFFSETS,
-                extraBytes: RESET_EXTRA_BYTES,
+                value: TRY_COUNTER_RESET,
                 filename: `zafira-b-${pin}-reset.bin`,
             },
         };
