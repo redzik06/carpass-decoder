@@ -36,6 +36,15 @@ VIN prefix is a **hard check** — mismatch = don't decode, only alert.
 2. Follow the CID Vectra C decoder as template (`decoders/opel/vectra/c/cid.js`)
 3. Add `<script src="..."></script>` tag in `carpass-decoder.html` (after `app.js`)
 
+Examples of added decoders:
+- `decoders/opel/astra/h/cid.js` — CID Astra H (VIN_PREFIX = `W0L0AHL`)
+- `decoders/opel/zafira/b/cid.js` — CID Zafira B (VIN_PREFIX = `W0L0AHM`)
+
+Common checks:
+- EXPECTED_SIZE: 512
+- VIN_OFFSET: 0xC1
+- VIN_LENGTH: 17
+
 ## Gotchas
 
 - `log(message, type)` writes to the log panel; types: `INFO`, `WARN`, `ERROR`, `RESULT`
