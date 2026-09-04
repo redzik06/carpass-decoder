@@ -22,13 +22,10 @@
     // PIN CarPass - niskie nibble bajtów (wzorzec Astra H, przesunięty o 1 vs Vectra C)
     const PIN_OFFSETS = [0x1E2, 0x1E6, 0x1E5, 0x1E9];
 
-    // Licznik pozostałych prób PIN - pole zerowane przy resycie
-    // (wzorzec: zrestetowany.BIN od Shootinga ma 0x1E3=0x00 i pozwala programować)
-    // Interpretacja: 0x00 = zresetowany/odblokowany = pełna pula 10 prób;
-    // wartość > 0 = NIE jest zresetowany (licznik zużyty) -> pokazuj 0
+    // Licznik prób PIN - bajt 0x1E3 odczytywany i wyświetlany wprost z pliku.
+    // Reset (przycisk) zeruje to pole do 0x00, jak wzorzec zrestetowany.BIN.
     const TRY_COUNTER_OFFSETS = [0x1E3];
     const TRY_COUNTER_RESET = 0x00;
-    const TRY_COUNTER_FULL = 10;
 
     // Metadane
     const CODE_INDEX_OFFSET = 0x00;
@@ -74,9 +71,7 @@
         const pin = readPin(data);
         const codeIndex = readCodeIndex(data);
         const serial = readAscii(data, SERIAL_OFFSET, SERIAL_LENGTH);
-        const rawTries = data[TRY_COUNTER_OFFSETS[0]];
-        // 0x00 = zresetowany -> pełna pula prób; >0 = nie zresetowany -> 0
-        const remainingTries = rawTries === 0 ? TRY_COUNTER_FULL : 0;
+        const remainingTries = data[TRY_COUNTER_OFFSETS[0]];
 
         log(`VIN prefix ${VIN_PREFIX} podmieniony (uszkodzony początek w dumpie)`);
         log(`VIN: ${vin}`, 'RESULT');
