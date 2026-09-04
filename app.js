@@ -136,14 +136,64 @@ decodeBtn.addEventListener('click', () => {
     log(`Rozpoznano moduł: ${match.decoder.name}`);
     const result = match.decoder.decode(loadedFileData);
 
-    if (result.vin) {
-        decodedCode.textContent = result.vin;
+    if (result.pin) {
+        decodedCode.textContent = result.pin;
     }
 
     resultsContent.innerHTML = `
+        ${result.unit !== undefined ? `
+        <div class="result-item">
+            <span class="result-label">Unit</span>
+            <span class="result-value">${escapeHtml(result.unit)}</span>
+        </div>` : ''}
+        ${result.eeprom !== undefined ? `
+        <div class="result-item">
+            <span class="result-label">EEPROM</span>
+            <span class="result-value">${escapeHtml(result.eeprom)}</span>
+        </div>` : ''}
+        ${result.vehicle !== undefined ? `
+        <div class="result-item">
+            <span class="result-label">Pojazd</span>
+            <span class="result-value">${escapeHtml(result.vehicle)}</span>
+        </div>` : ''}
+        ${result.pin !== undefined ? `
+        <div class="result-item">
+            <span class="result-label">Security Code</span>
+            <span class="result-value" style="color: var(--color-success);">${escapeHtml(result.pin)}</span>
+        </div>` : ''}
+        ${result.vin !== undefined ? `
+        <div class="result-item">
+            <span class="result-label">VIN</span>
+            <span class="result-value" style="color: var(--color-success);">${escapeHtml(result.vin)}</span>
+        </div>` : ''}
+        ${result.codeIndex !== undefined ? `
+        <div class="result-item">
+            <span class="result-label">Code Index</span>
+            <span class="result-value">${escapeHtml(result.codeIndex)}</span>
+        </div>` : ''}
+        ${result.ident !== undefined ? `
+        <div class="result-item">
+            <span class="result-label">Ident</span>
+            <span class="result-value">${escapeHtml(result.ident)}</span>
+        </div>` : ''}
+        ${result.partNumber !== undefined ? `
+        <div class="result-item">
+            <span class="result-label">Part Number</span>
+            <span class="result-value">${escapeHtml(result.partNumber)}</span>
+        </div>` : ''}
+        ${result.hardwareNumber !== undefined ? `
+        <div class="result-item">
+            <span class="result-label">Hardware Number</span>
+            <span class="result-value">${escapeHtml(result.hardwareNumber)}</span>
+        </div>` : ''}
+        ${result.serial !== undefined ? `
+        <div class="result-item">
+            <span class="result-label">Serial</span>
+            <span class="result-value">${escapeHtml(result.serial)}</span>
+        </div>` : ''}
         <div class="result-item">
             <span class="result-label">Moduł</span>
-            <span class="result-value" style="color: var(--color-success);">${escapeHtml(result.moduleName)}</span>
+            <span class="result-value">${escapeHtml(result.moduleName)}</span>
         </div>
         <div class="result-item">
             <span class="result-label">ID</span>
@@ -157,12 +207,6 @@ decodeBtn.addEventListener('click', () => {
             <span class="result-label">Rozmiar</span>
             <span class="result-value">${loadedFileData.length} bajtów</span>
         </div>
-        ${result.vin ? `
-        <div class="result-item">
-            <span class="result-label">VIN</span>
-            <span class="result-value" style="color: var(--color-success);">${escapeHtml(result.vin)}</span>
-        </div>
-        ` : ''}
     `;
 
     showOutput();

@@ -16,11 +16,57 @@ Static HTML/CSS/JS app for decoding Opel CarPass EEPROM dumps. No build step, no
 Decoders live at `decoders/{brand}/{model}/{generation}/{module}.js`. Each must:
 1. Be wrapped in an IIFE
 2. Export `identify(data)` → boolean (check file size first, then VIN/magic bytes)
-3. Export `decode(data)` → `{ vin, moduleName, moduleId }` (call `log()` for output)
+3. Export `decode(data)` → `{ vin, pin, moduleName, moduleId, ...metadata }` (call `log()` for output)
 4. Register via `window.carpassDecoders[id] = { identify, decode, name }`
 
 File size is a **hard check** — wrong size = immediately return false from `identify()`.
 VIN prefix is a **hard check** — mismatch = don't decode, only alert.
+
+## Result object & UI fields
+
+`decode()` returns an object whose fields are auto-rendered by `app.js` into the results list. Each decoder should return only the fields it can decode:
+
+- `unit`, `eeprom`, `vehicle` — static strings (e.g. Siemens VDO - GID / CID, 93C66 EEPROM)
+- `pin` — Security Code CarPass
+- `vin`
+- `codeIndex`
+- `ident`
+- `partNumber`
+- `hardwareNumber`
+- `serial`
+- `moduleName`, `moduleId`
+
+`app.js` renders each known field as a `<div class="result-item">` row. Add any new output field to both the decoder and the `resultsContent` template in `app.js`.
+
+## PIN CarPass decoding
+
+PIN (4-cyfrowy kod CarPass) to niskie nibble (`& 0x0F`) czterech bajtów w obszarze 0x1E0. Układ zależy od tego, czy VIN jest przesunięty:
+
+- **Standardowy układ** (VIN czysty ASCII na 0xC1, np. Vectra C, Zafira B):
+  `PIN = (0x1E3)(0x1E7)(0x1E4)(0x1E8)`
+- **Przesunięty układ o 1 bajt w lewo** (VIN na 0xC0 z wstawionym 0x00, np. Astra H):
+  `PIN = (0x1E2)(0x1E6)(0x1E5)(0x1E9)`
+
+## Vectra C / Zafira B metadata (standard UKŁAD)
+
+- Code Index: ASCII na 0x00 (5 bajtów, np. `01701`)
+- Hardware Number: BE int32 na 0x18C
+- Part Number: BE int32 na 0x190
+- Ident: ASCII na 0x194 (2 bajty, np. `DB`)
+- Data Version: ASCII na 0x196 (np. `DBD4`)
+- VIN: czysty ASCII na 0xC1
+
+## Astra H CID specific structure
+
+VIN zaczyna się na 0xC0 z `0x00` po 'W', a prawdziwy VIN odtwarza się z prefixu `W0L0AHL` + 10 cyfr z 0xC8 (marker rozpoznawczy `L0A0LH` na 0xC2). Metadane Astra H są INNE niż Vectra:
+
+- Code Index: ASCII na 0x00 (odfiltrowane nie-ASCII, np. `00021`)
+- Serial: ASCII na 0x194 (14 bajtów, np. `ESES5D021DM1TS`)
+- **Brak** zmapowanych pól Ident / Part Number / Hardware Number — wymagają referencji (jak dla Vectra) do zmapowania.
+
+## Zresetowany dump (licznik prób)
+
+Plik `zrestetowany.BIN` = ten sam pojazd co `astra h cid 93c66.BIN` (identyczny VIN), różni się tylko na 0x1E3 — to pole licznika pozostałych prób (0x1E2 / 0x1E9 wg źródła 3rd-party). Obsługa resetu licznika to planowany przyszły krok w Astra i Zafira dekoderach.
 
 ## Styling rules (non-obvious)
 
