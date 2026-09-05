@@ -29,9 +29,30 @@
 - **Operacje na pliku** / *File operations*
   - Reset licznika prób PIN / *PIN attempt-counter reset*
   - Wykasowanie PIN CarPass / *CarPass PIN clearing*
+  - Zmiana VIN z automatycznym przeliczeniem sumy kontrolnej (EDC16) / *VIN change + automatic checksum recalc (EDC16)*
   - Pola na przyszłe funkcje (COMMING SOON) / *Placeholders for future features*
 - **Log operacji w czasie rzeczywistym** / *Real-time operation log*
 - **Interfejs DarkPan (Bootstrap 5), po polsku** / *DarkPan (Bootstrap 5) UI, in Polish*
+
+---
+
+## 📝 Changelog
+
+> Aktualizowany przy każdej istotnej zmianie (nowe funkcje / znaczące poprawki), z datą i godziną. Najnowsze wpisy na górze.
+> *Updated with each significant change (new features / notable fixes), with date and time. Newest entries first.*
+
+| Data i godzina / Date & time | Zmiana / Change |
+|---|---|
+| **2026-09-05 07:26** | **Dodano sekcję changelog do README** — historia zmian z datą i godziną, aktualizowana przy każdej istotnej zmianie. / *Added a changelog section to the README.* |
+| **2026-09-04 16:18** | **EDC16: zmiana VIN z przeliczeniem sumy kontrolnej.** Akcja „Zmień VIN” w dekoderach EDC16C9 (Zafira B) i EDC16C9-39 (Vectra C): nowy VIN wpisywany we wszystkie kopie w EEPROM, a suma kontrolna (checksum) wszystkich pól mapy przeliczana automatycznie. Dodano narzędzie `crc.part1/` (EDC16 CRC Tool + mapy ECU) jako źródło algorytmu. / *VIN change with checksum recalc for EDC16 decoders + CRC tool.* |
+| **2026-09-04 15:52** | **Nowe dekodery sterowników silnika Bosch EDC16.** EDC16C9 (Zafira B, Z19DTH, 4096B) oraz EDC16C9-39 (Vectra C, Z19DTH, 8192B): odczyt VIN, PIN (4 bajty ASCII), Part Number, Software Number i dwóch dat. / *New Bosch EDC16 engine-ECU decoders.* |
+| **2026-09-04 15:35** | **Dwujęzyczny README (PL/EN)** — opis, funkcje, obsługa, wspierane moduły, struktura projektu. / *Bilingual (PL/EN) README.* |
+| **2026-09-04 15:32** | **Menu boczne „Operacje na pliku”.** Akcje na kopii wgrywanego pliku (reset licznika, wykasowanie PIN) + sekcja „Nadchodzące” z 5 pola-mi na przyszłe funkcje. / *Sidebar file-operations menu + „Coming soon” section.* |
+| **2026-09-04 15:26** | **Restyle interfejsu na motyw DarkPan** (Bootstrap 5, kolor primary `#EB1616`), skalowanie widoku do rozdzielczości. / *Restyle to the DarkPan admin theme.* |
+| **2026-09-04 13:37** | **Licznik nieudanych prób PIN („Nieudane próby”).** Odczyt bajtu `0x1E3` wprost z pliku + przycisk „Pobierz zresetowany dump” dla Astra H / Zafira B (generuje plik bit-identyczny z wzorcowym resetem). / *Remaining-tries counter read + reset download.* |
+| **2026-09-04 12:43** | **Dekoder CID Zafira B** — poprawny przesunięty układ PIN (jak Astra H), rozróżnianie Astra H / Zafira B po markerze na `0xC2`. / *CID Zafira B decoder (shifted layout).* |
+| **2026-09-04 12:36** | **Odczyt PIN CarPass i pełnych metadanych modułu** (Code Index, Serial, Ident, Part/Hardware Number, Data Version) dla CID Vectra C. / *CarPass PIN + full module-metadata decoding.* |
+| **2026-09-03 14:41** | **Wydanie początkowe** — szkielet aplikacji, wgrywanie pliku, auto-identyfikacja, dekoder CID Vectra C. / *Initial release.* |
 
 ---
 
@@ -121,8 +142,8 @@ Sekcja **„Nadchodzące" / „Coming soon"** zawiera pola na przyszłe funkcje 
 | **CID Astra H** | Opel | 93C66 EEPROM | VIN, PIN, Code Index, Serial, reset licznika, wykasuj PIN |
 | **CID Zafira B** | Opel | 93C66 EEPROM | VIN, PIN, Code Index, Serial, reset licznika, wykasuj PIN |
 | **CID Vectra C / Signum** | Opel | 93C66 EEPROM | VIN, PIN, Code Index, Ident, Part/Hardware Number, Data Version |
-| **EDC16C9 — Zafira B (Z19DTH)** | Opel / Bosch | EEPROM (4096B) | VIN, PIN (ASCII), Part Number, Software Number, daty |
-| **EDC16C9-39 — Vectra C (Z19DTH)** | Opel / Bosch | EEPROM (8192B) | VIN, PIN (ASCII), Part Number, Software Number, daty |
+| **EDC16C9 — Zafira B (Z19DTH)** | Opel / Bosch | EEPROM (4096B) | VIN, PIN (ASCII), Part Number, Software Number, daty, zmiana VIN + checksum |
+| **EDC16C9-39 — Vectra C (Z19DTH)** | Opel / Bosch | EEPROM (8192B) | VIN, PIN (ASCII), Part Number, Software Number, daty, zmiana VIN + checksum |
 
 > ⚠️ Dekodery odczytują dane z pliku **wprost** (zgodnie z ich zawartością). Rozpoznawanie działa tylko dla obsługiwanych modułów i prawidłowych plików.
 > *Decoders read data **directly** from the file (as-is). Identification works only for supported modules and correct files.*
