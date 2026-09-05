@@ -290,4 +290,22 @@ Rozróżnienie C9 vs C9-39: Part Number (`S00...` vs `CH...`) + VIN prefix. W EE
 
 Dodano nowe pola wynikowe do template `app.js`: `softwareNumber`, `programDate`, `releaseDate`. Zarejestrowano scripty w `carpass-decoder.html`. Zweryfikowano: 5 dekoderów (3 CID + 2 EDC16) działa bez kolizji identyfikacji.
 
-Zaktualizowano AGENTS.md (sekcja EDC16).
+### 17. Obowiązki agenta + changelog
+
+Użytkownik zażądał, aby **każdy przyszły agent pracujący nad projektem znał komplet obowiązków**. Dodano na górze AGENTS.md sekcję „Obowiązki agenta (ZASADY OBOWIĄZKOWE)" — 12 punktów:
+1. Changelog w README (nowa funkcja/istotna zmiana = wiersz na górze tabeli, data+godzina, PL+EN)
+2. Nowe pole wyniku → dekoder + `resultsContent` w `app.js`
+3. Nowy dekoder → plik IIFE + `<script>` w `carpass-decoder.html`
+4. Język UI po polsku, błędy = `log(..., 'ERROR')`
+5. Hard checki w `identify()`: rozmiar → VIN prefix (mismatch = brak dekodowania)
+6. `node --check` po każdej edycji JS
+7. Weryfikacja funkcjonalna na `test pliki/` (EDC16: 62/62 lub 35/35 pól)
+8. Dokumentacja w AGENTS.md + ROZMOWA.md
+9. Reguły DarkPan (1920px, scale, bez media queries)
+10. Brak komentarzy w kodzie bez zgody
+11. Git: `git add -A && git commit`, czyste drzewo robocze
+12. README: aktualizacja „Features" i „Wspierane moduły"
+
+Uzupełniono też listę pól wyniku w AGENTS.md o pola dodatkowe `softwareNumber`, `programDate`, `releaseDate`, `remainingTries`, `reset`, `actions`.
+
+Dodano sekcję **📝 Changelog** do README (tabela z datą i godziną, najnowsze na górze, opisy PL+EN) z wpisami od wydania początkowego. Zaktualizowano Features (zmiana VIN + checksum w EDC16) i tabelę Wspierane moduły (EDC16: zmiana VIN + checksum).

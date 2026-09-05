@@ -1,5 +1,24 @@
 # AGENTS.md
 
+## Obowiązki agenta (ZASADY OBOWIĄZKOWE — czytaj jako pierwsze)
+
+Każda zmiana w tym projekcie musi spełniać WSZYSTKIE poniższe obowiązki. Pominięcie któregokolwiek = niedokończona praca.
+
+1. **Changelog w README** — każda nowa funkcja / istotna zmiana (nie poprawka kosmetyczna) = nowy wiersz na GÓRZE tabeli `📝 Changelog` w `README.md`, z **datą i godziną** (`YYYY-MM-DD HH:MM`, weź z `date`), opisem PL + EN.
+2. **Nowe pole wyniku** → dodaj je BOTH: w dekoderze (`decode()` zwraca obiekt) ORAZ w szablonie `resultsContent` w `app.js`. Bez tego pole nie wyrenderuje się.
+3. **Nowy dekoder** → utwórz `decoders/{brand}/{model}/{generation}/{module}.js` (IIFE) ORAZ dodaj `<script src="...">` w `carpass-decoder.html` po `app.js`. Oba kroki, inaczej dekoder nie działa.
+4. **Język UI** — wszystkie widoczne dla użytkownika stringi po POLSKU (nazwy pól, logi, przyciski, komunikaty). Komunikaty błędów = `log(..., 'ERROR')`.
+5. **Hard checki** — `identify()`: NAJPIERW rozmiar pliku, potem VIN prefix/markery. Zły rozmiar lub zły VIN prefix = `false`/alert, NIGDY nie dekoduj.
+6. **Weryfikacja składni** — po każdej edycji JS uruchom `node --check <plik>` dla WSZYSTKICH zmienionych plików `.js`.
+7. **Weryfikacja funkcjonalna** — zmiany dekoderów/akcji testuj na plikach z `test pliki/` (Node dla logiki; dla EDC16 dodatkowo `fixChecksums`/`validateChecksums` → 62/62 lub 35/35 pól OK). Nie zakładaj — sprawdź.
+8. **Dokumentacja** — nowe offsety/reguły/algorytmy wpisz do `AGENTS.md`; historię sesji aktualizuj w `ROZMOWA.md`.
+9. **Styl** — trzymaj się reguł DarkPan (sekcja „Styling rules"): stała szerokość 1920px + `transform: scale()`, BEZ media queries/breakpointów, zaokrąglone rogi, `css/bootstrap.min.css` = build darkpan (`$primary: #EB1616`), NIE podmieniaj na stockowy Bootstrap.
+10. **Brak komentarzy** — nie dodawaj komentarzy w kodzie, chyba że użytkownik o nie poprosi.
+11. **Git** — na koniec `git add -A && git commit` (jeśli użytkownik prosi o push: `git push origin master`) i zostaw **czyste drzewo robocze**. Sprawdź `git status`.
+12. **README/Funkcje** — gdy zmieniasz konkretną funkcję modułu, zaktualizuj też listę „Features" i tabelę „Wspierane moduły".
+
+Wzorzec dekodera, offsety, algorytmy i struktury EEPROM — poniżej. Ufaj AGENTS.md bardziej niż nazwom plików (np. plik o nazwie „Vectra C" może być naprawdę Zafirą B — decyduje VIN).
+
 ## Project overview
 
 Static HTML/CSS/JS app for decoding Opel CarPass EEPROM dumps. No build step, no bundler, no tests. Open `carpass-decoder.html` directly or via any static server.
@@ -36,6 +55,12 @@ VIN prefix is a **hard check** — mismatch = don't decode, only alert.
 - `hardwareNumber`
 - `serial`
 - `moduleName`, `moduleId`
+
+Pola dodatkowe (istniejące w projekcie):
+- `softwareNumber`, `programDate`, `releaseDate` — EDC16 (software number + dwie daty programu)
+- `remainingTries` — wartość bajtu `0x1E3` (nieudane próby PIN, tylko Astra/Zafira)
+- `reset` — obiekt `{ offsets, value, filename }` dla przycisku „Pobierz zresetowany dump" (Astra/Zafira)
+- `actions` — tablica `[{ id, label, filename, apply(copy) }]` do menu „Operacje na pliku"
 
 `app.js` renders each known field as a `<div class="result-item">` row. Add any new output field to both the decoder and the `resultsContent` template in `app.js`.
 

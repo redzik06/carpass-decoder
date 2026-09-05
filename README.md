@@ -43,6 +43,7 @@
 
 | Data i godzina / Date & time | Zmiana / Change |
 |---|---|
+| **2026-09-05 10:21** | **Obowiązki agenta (AGENTS.md).** Dodano na górze AGENTS.md sekcję „Obowiązki agenta" — 12 zasad, które musi spełnić każda zmiana (changelog, nowe pola/dekodery, język PL, hard checki, weryfikacja Node, dokumentacja, styl DarkPan, git). Uzupełniono listę pól wyniku o `softwareNumber`/`programDate`/`releaseDate`, `remainingTries`, `reset`, `actions`. / *Agent obligations section added to AGENTS.md.* |
 | **2026-09-05 07:26** | **Dodano sekcję changelog do README** — historia zmian z datą i godziną, aktualizowana przy każdej istotnej zmianie. / *Added a changelog section to the README.* |
 | **2026-09-04 16:18** | **EDC16: zmiana VIN z przeliczeniem sumy kontrolnej.** Akcja „Zmień VIN” w dekoderach EDC16C9 (Zafira B) i EDC16C9-39 (Vectra C): nowy VIN wpisywany we wszystkie kopie w EEPROM, a suma kontrolna (checksum) wszystkich pól mapy przeliczana automatycznie. Dodano narzędzie `crc.part1/` (EDC16 CRC Tool + mapy ECU) jako źródło algorytmu. / *VIN change with checksum recalc for EDC16 decoders + CRC tool.* |
 | **2026-09-04 15:52** | **Nowe dekodery sterowników silnika Bosch EDC16.** EDC16C9 (Zafira B, Z19DTH, 4096B) oraz EDC16C9-39 (Vectra C, Z19DTH, 8192B): odczyt VIN, PIN (4 bajty ASCII), Part Number, Software Number i dwóch dat. / *New Bosch EDC16 engine-ECU decoders.* |
